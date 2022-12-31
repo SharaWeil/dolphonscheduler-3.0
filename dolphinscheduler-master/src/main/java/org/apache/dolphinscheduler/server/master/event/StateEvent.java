@@ -34,6 +34,8 @@ public class StateEvent {
      */
     private String key;
 
+    private Long processDefinitionCode;
+
     private StateEventType type;
 
     private ExecutionStatus executionStatus;

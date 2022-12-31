@@ -116,6 +116,9 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter {
      */
     private void processReceived(final Channel channel, final Command msg) {
         final CommandType commandType = msg.getType();
+        if (CommandType.PROCESS_INSTANCE_STATE.equals(commandType)){
+            System.out.println("=============================================master接收到了请求===================================");
+        }
         if (CommandType.HEART_BEAT.equals(commandType)) {
             if (logger.isDebugEnabled()) {
                 logger.debug("server receive heart beat from: host: {}", ChannelUtils.getRemoteAddress(channel));

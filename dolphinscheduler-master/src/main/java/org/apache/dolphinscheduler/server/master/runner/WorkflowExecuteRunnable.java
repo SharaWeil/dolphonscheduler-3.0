@@ -114,6 +114,9 @@ import lombok.NonNull;
 
 /**
  * Workflow execute task, used to execute a workflow instance.
+ *
+ * 负责执行instance，每一个instance都对应一个WorkflowExecuteRunnable线程,并负责这个instance相关的所有状态
+ *
  */
 public class WorkflowExecuteRunnable implements Callable<WorkflowSubmitStatue> {
 
@@ -968,6 +971,9 @@ public class WorkflowExecuteRunnable implements Callable<WorkflowSubmitStatue> {
                 taskStateChangeEvent.setTaskInstanceId(taskInstance.getId());
                 taskStateChangeEvent.setExecutionStatus(taskProcessor.taskInstance().getState());
                 taskStateChangeEvent.setType(StateEventType.TASK_STATE_CHANGE);
+
+                // 这里是instance完成
+                logger.info("#########{}#########",taskStateChangeEvent.toString());
                 this.stateEvents.add(taskStateChangeEvent);
             }
             return Optional.of(taskInstance);

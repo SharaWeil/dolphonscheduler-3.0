@@ -60,6 +60,8 @@ import org.springframework.stereotype.Component;
 
 /**
  * TaskUpdateQueue consumer
+ *
+ *  调度task
  */
 @Component
 public class TaskPriorityQueueConsumer extends BaseDaemonThread {
@@ -127,6 +129,9 @@ public class TaskPriorityQueueConsumer extends BaseDaemonThread {
         int fetchTaskNum = masterConfig.getDispatchTaskNumber();
         while (Stopper.isRunning()) {
             try {
+                /**
+                 *  批量调度,返回调度失败的数量
+                 */
                 List<TaskPriority> failedDispatchTasks = this.batchDispatch(fetchTaskNum);
 
                 if (CollectionUtils.isNotEmpty(failedDispatchTasks)) {
