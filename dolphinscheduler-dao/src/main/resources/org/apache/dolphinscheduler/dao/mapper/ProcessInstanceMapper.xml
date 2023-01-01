@@ -264,4 +264,12 @@
         set next_process_instance_id = #{thisInstanceId}
         where id = #{runningInstanceId} and next_process_instance_id=0
     </update>
+
+
+    <select id="queryByCommandId" resultType="org.apache.dolphinscheduler.dao.entity.ProcessInstance">
+        select
+        <include refid="baseSql"/>
+        from t_ds_process_instance
+        where command_id = #{commandId}
+    </select>
 </mapper>

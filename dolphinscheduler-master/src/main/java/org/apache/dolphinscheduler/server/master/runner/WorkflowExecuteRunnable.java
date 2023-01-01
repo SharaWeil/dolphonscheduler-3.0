@@ -67,11 +67,7 @@ import org.apache.dolphinscheduler.remote.command.HostUpdateCommand;
 import org.apache.dolphinscheduler.remote.utils.Host;
 import org.apache.dolphinscheduler.server.master.config.MasterConfig;
 import org.apache.dolphinscheduler.server.master.dispatch.executor.NettyExecutorManager;
-import org.apache.dolphinscheduler.server.master.event.StateEvent;
-import org.apache.dolphinscheduler.server.master.event.StateEventHandleError;
-import org.apache.dolphinscheduler.server.master.event.StateEventHandleException;
-import org.apache.dolphinscheduler.server.master.event.StateEventHandler;
-import org.apache.dolphinscheduler.server.master.event.StateEventHandlerManager;
+import org.apache.dolphinscheduler.server.master.event.*;
 import org.apache.dolphinscheduler.server.master.metrics.TaskMetrics;
 import org.apache.dolphinscheduler.server.master.processor.ProcessInstanceStateService;
 import org.apache.dolphinscheduler.server.master.runner.task.ITaskProcessor;
@@ -265,8 +261,6 @@ public class WorkflowExecuteRunnable implements Callable<WorkflowSubmitStatue> {
         while (!this.stateEvents.isEmpty()) {
             try {
                 stateEvent = this.stateEvents.peek();
-
-
                 processInstanceStateService.addEvents(stateEvent);
 
                 LoggerUtils.setWorkflowAndTaskInstanceIDMDC(stateEvent.getProcessInstanceId(),

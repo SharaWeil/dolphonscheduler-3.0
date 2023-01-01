@@ -48,6 +48,8 @@ public class ProcessInstance {
     @TableId(value = "id", type = IdType.AUTO)
     private int id;
 
+    private int commandId;
+
     /**
      * process definition code
      */
@@ -531,6 +533,14 @@ public class ProcessInstance {
 
     public void setRestartTime(Date restartTime) {
         this.restartTime = restartTime;
+    }
+
+    public int getCommandId() {
+        return commandId;
+    }
+
+    public void setCommandId(int commandId) {
+        this.commandId = commandId;
     }
 
     /**

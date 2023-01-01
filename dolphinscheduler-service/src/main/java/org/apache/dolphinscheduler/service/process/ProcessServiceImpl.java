@@ -401,7 +401,7 @@ public class ProcessServiceImpl implements ProcessService {
             }
             result = commandMapper.insert(command);
         }
-        return result;
+        return result > 0? command.getId() : result;
     }
 
     /**
@@ -468,6 +468,11 @@ public class ProcessServiceImpl implements ProcessService {
         return processInstanceMapper.queryDetailById(processId);
     }
 
+    @Override
+    public ProcessInstance findProcessInstanceByCommandId(int commandId) {
+        return processInstanceMapper.queryByCommandId(commandId);
+    }
+
     /**
      * get task node list by definitionId
      */
@@ -502,6 +507,8 @@ public class ProcessServiceImpl implements ProcessService {
     public ProcessInstance findProcessInstanceById(int processId) {
         return processInstanceMapper.selectById(processId);
     }
+
+
 
     /**
      * find process define by id.
@@ -741,6 +748,7 @@ public class ProcessServiceImpl implements ProcessService {
                                                        Command command,
                                                        Map<String, String> cmdParam) {
         ProcessInstance processInstance = new ProcessInstance(processDefinition);
+        processInstance.setCommandId(command.getId());
         processInstance.setProcessDefinitionCode(processDefinition.getCode());
         processInstance.setProcessDefinitionVersion(processDefinition.getVersion());
         processInstance.setState(ExecutionStatus.RUNNING_EXECUTION);

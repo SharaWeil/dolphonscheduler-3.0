@@ -195,7 +195,7 @@ public class ExecutorServiceImpl extends BaseServiceImpl implements ExecutorServ
         }
 
         /**
-         * create command
+         *  command Id
          */
         int create = this.createCommand(commandType, processDefinition.getCode(),
                 taskDependType, failureStrategy, startNodeList, cronTime, warningType, loginUser.getId(),
@@ -206,6 +206,7 @@ public class ExecutorServiceImpl extends BaseServiceImpl implements ExecutorServ
         if (create > 0) {
             processDefinition.setWarningGroupId(warningGroupId);
             processDefinitionMapper.updateById(processDefinition);
+            resultData.put("id",create);
             result.put(Constants.DATA_LIST,resultData);
             putMsg(result, Status.SUCCESS);
         } else {
@@ -540,6 +541,7 @@ public class ExecutorServiceImpl extends BaseServiceImpl implements ExecutorServ
             return result;
         }
 
+        // commandId
         int create = processService.createCommand(command);
 
         if (create > 0) {

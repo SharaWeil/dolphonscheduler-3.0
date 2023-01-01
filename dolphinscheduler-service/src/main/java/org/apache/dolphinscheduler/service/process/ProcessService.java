@@ -76,6 +76,8 @@ public interface ProcessService {
 
     ProcessInstance findProcessInstanceDetailById(int processId);
 
+    ProcessInstance findProcessInstanceByCommandId(int commandId);
+
     List<TaskDefinition> getTaskNodeListByDefinition(long defineCode);
 
     ProcessInstance findProcessInstanceById(int processId);
