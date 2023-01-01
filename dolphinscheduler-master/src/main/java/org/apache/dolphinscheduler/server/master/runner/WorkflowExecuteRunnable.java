@@ -73,6 +73,7 @@ import org.apache.dolphinscheduler.server.master.event.StateEventHandleException
 import org.apache.dolphinscheduler.server.master.event.StateEventHandler;
 import org.apache.dolphinscheduler.server.master.event.StateEventHandlerManager;
 import org.apache.dolphinscheduler.server.master.metrics.TaskMetrics;
+import org.apache.dolphinscheduler.server.master.processor.ProcessInstanceStateService;
 import org.apache.dolphinscheduler.server.master.runner.task.ITaskProcessor;
 import org.apache.dolphinscheduler.server.master.runner.task.TaskAction;
 import org.apache.dolphinscheduler.server.master.runner.task.TaskProcessorFactory;
@@ -123,6 +124,8 @@ public class WorkflowExecuteRunnable implements Callable<WorkflowSubmitStatue> {
     private static final Logger logger = LoggerFactory.getLogger(WorkflowExecuteRunnable.class);
 
     private final ProcessService processService;
+
+    private final ProcessInstanceStateService processInstanceStateService;
 
     private final ProcessAlertManager processAlertManager;
 
@@ -229,13 +232,15 @@ public class WorkflowExecuteRunnable implements Callable<WorkflowSubmitStatue> {
                                    @NonNull NettyExecutorManager nettyExecutorManager,
                                    @NonNull ProcessAlertManager processAlertManager,
                                    @NonNull MasterConfig masterConfig,
-                                   @NonNull StateWheelExecuteThread stateWheelExecuteThread) {
+                                   @NonNull StateWheelExecuteThread stateWheelExecuteThread,
+                                   @NonNull ProcessInstanceStateService processInstanceStateService) {
         this.processService = processService;
         this.processInstance = processInstance;
         this.nettyExecutorManager = nettyExecutorManager;
         this.processAlertManager = processAlertManager;
         this.stateWheelExecuteThread = stateWheelExecuteThread;
         this.masterAddress = NetUtils.getAddr(masterConfig.getListenPort());
+        this.processInstanceStateService = processInstanceStateService;
         TaskMetrics.registerTaskPrepared(readyToSubmitTaskQueue::size);
     }
 
@@ -260,6 +265,10 @@ public class WorkflowExecuteRunnable implements Callable<WorkflowSubmitStatue> {
         while (!this.stateEvents.isEmpty()) {
             try {
                 stateEvent = this.stateEvents.peek();
+
+
+                processInstanceStateService.addEvents(stateEvent);
+
                 LoggerUtils.setWorkflowAndTaskInstanceIDMDC(stateEvent.getProcessInstanceId(),
                     stateEvent.getTaskInstanceId());
                 // if state handle success then will remove this state, otherwise will retry this state next time.

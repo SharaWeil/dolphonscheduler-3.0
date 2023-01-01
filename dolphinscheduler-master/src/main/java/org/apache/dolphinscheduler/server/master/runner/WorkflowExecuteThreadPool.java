@@ -21,7 +21,6 @@ import org.apache.dolphinscheduler.common.enums.Flag;
 import org.apache.dolphinscheduler.common.enums.StateEventType;
 import org.apache.dolphinscheduler.common.utils.LoggerUtils;
 import org.apache.dolphinscheduler.common.utils.NetUtils;
-import org.apache.dolphinscheduler.dao.entity.ProcessDefinition;
 import org.apache.dolphinscheduler.dao.entity.ProcessInstance;
 import org.apache.dolphinscheduler.dao.entity.TaskInstance;
 import org.apache.dolphinscheduler.plugin.task.api.enums.ExecutionStatus;
@@ -31,8 +30,7 @@ import org.apache.dolphinscheduler.remote.utils.Host;
 import org.apache.dolphinscheduler.server.master.cache.ProcessInstanceExecCacheManager;
 import org.apache.dolphinscheduler.server.master.config.MasterConfig;
 import org.apache.dolphinscheduler.server.master.event.StateEvent;
-import org.apache.dolphinscheduler.server.master.processor.ProcessInstanceStateProcessor;
-import org.apache.dolphinscheduler.server.master.processor.ProcessInstanceStateResponseService;
+import org.apache.dolphinscheduler.server.master.processor.ProcessInstanceStateService;
 import org.apache.dolphinscheduler.service.process.ProcessService;
 
 import org.apache.commons.lang.StringUtils;
@@ -78,7 +76,7 @@ public class WorkflowExecuteThreadPool extends ThreadPoolTaskExecutor {
     private StateWheelExecuteThread stateWheelExecuteThread;
 
     @Autowired
-    private ProcessInstanceStateResponseService processInstanceStateResponseService;
+    private ProcessInstanceStateService processInstanceStateService;
 
     /**
      * multi-thread filter, avoid handling workflow at the same time
@@ -105,7 +103,7 @@ public class WorkflowExecuteThreadPool extends ThreadPoolTaskExecutor {
         workflowExecuteThread.addStateEvent(stateEvent);
 
 
-        processInstanceStateResponseService.addEvents(stateEvent);
+//        processInstanceStateService.addEvents(stateEvent);
         logger.info("Submit state event success, stateEvent: {}", stateEvent);
     }
 
@@ -145,15 +143,15 @@ public class WorkflowExecuteThreadPool extends ThreadPoolTaskExecutor {
                         notifyProcessChanged(workflowExecuteThread.getProcessInstance());
 
                         // 任务实例
-                        ProcessInstance processInstance = workflowExecuteThread.getProcessInstance();
-                        Long processDefinition = processInstance.getProcessDefinitionCode();
-                        ExecutionStatus state = processInstance.getState();
-                        StateEvent stateEvent = new StateEvent();
-                        stateEvent.setExecutionStatus(state);
-                        stateEvent.setKey(String.valueOf(processInstance.getId()));
-                        stateEvent.setProcessInstanceId(processInstanceId);
-                        stateEvent.setProcessDefinitionCode(processDefinition);
-                        processInstanceStateResponseService.addEvents(stateEvent);
+//                        ProcessInstance processInstance = workflowExecuteThread.getProcessInstance();
+//                        Long processDefinition = processInstance.getProcessDefinitionCode();
+//                        ExecutionStatus state = processInstance.getState();
+//                        StateEvent stateEvent = new StateEvent();
+//                        stateEvent.setExecutionStatus(state);
+//                        stateEvent.setKey(String.valueOf(processInstance.getId()));
+//                        stateEvent.setProcessInstanceId(processInstanceId);
+//                        stateEvent.setProcessDefinitionCode(processDefinition);
+//                        processInstanceStateService.addEvents(stateEvent);
                         logger.info("Workflow instance is finished.");
                     }
                 } catch (Exception e) {

@@ -36,6 +36,7 @@ import org.apache.dolphinscheduler.server.master.event.WorkflowEventType;
 import org.apache.dolphinscheduler.server.master.exception.MasterException;
 import org.apache.dolphinscheduler.server.master.metrics.MasterServerMetrics;
 import org.apache.dolphinscheduler.server.master.metrics.ProcessInstanceMetrics;
+import org.apache.dolphinscheduler.server.master.processor.ProcessInstanceStateService;
 import org.apache.dolphinscheduler.server.master.registry.ServerNodeManager;
 import org.apache.dolphinscheduler.service.alert.ProcessAlertManager;
 import org.apache.dolphinscheduler.service.process.ProcessService;
@@ -89,6 +90,10 @@ public class MasterSchedulerBootstrap extends BaseDaemonThread implements AutoCl
 
     @Autowired
     private WorkflowEventLooper workflowEventLooper;
+
+
+    @Autowired
+    private ProcessInstanceStateService processInstanceStateService;
 
     private String masterAddress;
 
@@ -159,7 +164,8 @@ public class MasterSchedulerBootstrap extends BaseDaemonThread implements AutoCl
                                                                                                nettyExecutorManager,
                                                                                                processAlertManager,
                                                                                                masterConfig,
-                                                                                               stateWheelExecuteThread);
+                                                                                               stateWheelExecuteThread,
+                                                                                               processInstanceStateService);
                         processInstanceExecCacheManager.cache(processInstance.getId(), workflowRunnable);
                         workflowEventQueue.addEvent(new WorkflowEvent(WorkflowEventType.START_WORKFLOW,
                                                                       processInstance.getId()));

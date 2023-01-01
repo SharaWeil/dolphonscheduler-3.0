@@ -3,7 +3,6 @@ package org.apache.dolphinscheduler.server.master.processor;
 import com.google.common.base.Preconditions;
 import io.netty.channel.Channel;
 import org.apache.dolphinscheduler.common.utils.JSONUtils;
-import org.apache.dolphinscheduler.registry.api.Event;
 import org.apache.dolphinscheduler.remote.command.Command;
 import org.apache.dolphinscheduler.remote.command.CommandType;
 import org.apache.dolphinscheduler.remote.command.ProcessInstanceStateCommand;
@@ -27,7 +26,7 @@ public class ProcessInstanceStateProcessor implements NettyRequestProcessor {
     private final Logger logger = LoggerFactory.getLogger(ProcessInstanceStateProcessor.class);
 
     @Autowired
-    private ProcessInstanceStateResponseService processInstanceStateResponseService;
+    private ProcessInstanceStateService processInstanceStateService;
 
     @Override
     public void process(Channel channel, Command command) {
@@ -41,6 +40,6 @@ public class ProcessInstanceStateProcessor implements NettyRequestProcessor {
         //21
         String workFlowId = processInstanceStateCommand.getId();
 
-        processInstanceStateResponseService.addCache(workFlowId, stateEvent);
+        processInstanceStateService.addCache(workFlowId, stateEvent);
     }
 }

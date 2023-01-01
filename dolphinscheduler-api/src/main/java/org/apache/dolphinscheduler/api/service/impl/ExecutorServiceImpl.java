@@ -202,9 +202,11 @@ public class ExecutorServiceImpl extends BaseServiceImpl implements ExecutorServ
                 warningGroupId, runMode, processInstancePriority, workerGroup, environmentCode, startParams,
                 expectedParallelismNumber, dryRun, complementDependentMode);
 
+        Map<String, Object> resultData = new HashMap<>();
         if (create > 0) {
             processDefinition.setWarningGroupId(warningGroupId);
             processDefinitionMapper.updateById(processDefinition);
+            result.put(Constants.DATA_LIST,resultData);
             putMsg(result, Status.SUCCESS);
         } else {
             putMsg(result, Status.START_PROCESS_INSTANCE_ERROR);
