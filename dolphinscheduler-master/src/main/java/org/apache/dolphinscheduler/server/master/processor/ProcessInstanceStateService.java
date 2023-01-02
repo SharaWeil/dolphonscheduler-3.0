@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
+import java.net.SocketAddress;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Objects;
@@ -43,7 +44,7 @@ public class ProcessInstanceStateService {
     /**
      *  订阅列表
      */
-    private final ConcurrentHashMap<Long, ProcessInstanceStateEvent> subscribeAllCache = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<SocketAddress, ProcessInstanceStateEvent> subscribeAllCache = new ConcurrentHashMap<>();
 
     /**
      * 订阅单个任务缓存
@@ -114,9 +115,9 @@ public class ProcessInstanceStateService {
                             }
                         });
 
-                        Iterator<Map.Entry<Long, ProcessInstanceStateEvent>> iterator = subscribeAllCache.entrySet().iterator();
+                        Iterator<Map.Entry<SocketAddress, ProcessInstanceStateEvent>> iterator = subscribeAllCache.entrySet().iterator();
                         while (iterator.hasNext()) {
-                            Map.Entry<Long, ProcessInstanceStateEvent> entry = iterator.next();
+                            Map.Entry<SocketAddress, ProcessInstanceStateEvent> entry = iterator.next();
                             ProcessInstanceStateEvent elem = entry.getValue();
                             Channel channel = elem.getChannel();
                             if (!channel.isActive()) {
@@ -207,10 +208,12 @@ public class ProcessInstanceStateService {
                 break;
             }
             case SUBSCRIBE_ALL: {
-                removeObj = subscribeAllCache.get(requestId);
+                Channel channel = event.getChannel();
+                SocketAddress key = channel.remoteAddress();
+                removeObj = subscribeAllCache.get(key);
                 if (null != removeObj){
                     removeObj.getChannel().close();
-                    subscribeAllCache.remove(requestId,removeObj);
+                    subscribeAllCache.remove(key,removeObj);
                 }
                 break;
             }
@@ -238,8 +241,8 @@ public class ProcessInstanceStateService {
                 break;
             }
             case SUBSCRIBE_ALL: {
-                Long requestId = stateEvent.getRequestId();
-                this.subscribeAllCache.put(requestId,stateEvent);
+                Channel channel = stateEvent.getChannel();
+                this.subscribeAllCache.put(channel.remoteAddress(),stateEvent);
                 break;
             }
             default:
