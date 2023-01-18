@@ -43,6 +43,7 @@ public class ProcessInstanceStateService {
 
     /**
      *  订阅列表
+     *  每一个client对应一个订阅事件
      */
     private final ConcurrentHashMap<SocketAddress, ProcessInstanceStateEvent> subscribeAllCache = new ConcurrentHashMap<>();
 
@@ -56,19 +57,10 @@ public class ProcessInstanceStateService {
      */
     private final BlockingQueue<ProcessInstancePair> unStartProcessInstance = new LinkedBlockingQueue<>(100);
 
-    /**
-     * state event queue
-     * 1、如果事件已经发送过来，但是对应的消费者尚未准备成功，事件不能被消费
-     * 2、如果每一个instance实例的事件全部混在一起，就能乱了
-     */
-    private final ConcurrentHashMap<String, BlockingQueue<StateEvent>> eventQueue = new ConcurrentHashMap<>();
-
-
 
     /**
      * state event queue
      * 1、如果事件已经发送过来，但是对应的消费者尚未准备成功，事件不能被消费
-     * 2、如果每一个instance实例的事件全部混在一起，就能乱了
      */
     private final BlockingQueue<StateEvent> eventQueues = new LinkedBlockingQueue<>();
 
@@ -85,10 +77,7 @@ public class ProcessInstanceStateService {
 
     @PostConstruct
     public void init() {
-//event :StateEvent(key=null, processDefinitionCode=null, type=TASK_STATE_CHANGE, executionStatus=SUCCESS, taskInstanceId=62, taskCode=0, processInstanceId=35, context=null, channel=null)
-// StateEvent(key=null, processDefinitionCode=null, type=PROCESS_STATE_CHANGE, executionStatus=SUCCESS, taskInstanceId=0, taskCode=0, processInstanceId=35, context=null, channel=null)
         Runnable runnable = new Runnable() {
-
             @Override
             public void run() {
                 while (true) {
@@ -273,8 +262,12 @@ public class ProcessInstanceStateService {
 
         @Override
         public boolean equals(Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
+            if (this == o) {
+                return true;
+            }
+            if (o == null || getClass() != o.getClass()) {
+                return false;
+            }
             ProcessInstancePair that = (ProcessInstancePair) o;
             return requestId.equals(that.getRequestId());
         }
